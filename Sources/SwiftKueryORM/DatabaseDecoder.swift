@@ -168,7 +168,15 @@ open class DatabaseDecoder {
             return try castedValue(unwrappedValue, type, key)
         }
         public func decode(_ type: String.Type, forKey key: Key) throws -> String {
-            let unwrappedValue = try unwrapValue(key, checkValueExitence(key))
+            var unwrappedValue = try unwrapValue(key, checkValueExitence(key))
+
+            // if the database type is a date and the receiving model is a string, decode the
+            // date into an iso8601 string
+            if let date = unwrappedValue as? Date {
+                let formatter = ISO8601DateFormatter()
+                formatter.formatOptions = [.withInternetDateTime,.withFractionalSeconds]
+                unwrappedValue = formatter.string(from: date)
+            }
             return try castedValue(unwrappedValue, type, key)
         }
         public func decode(_ type: Bool.Type, forKey key: Key) throws -> Bool {
