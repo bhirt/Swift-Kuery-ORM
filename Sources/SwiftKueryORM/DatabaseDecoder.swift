@@ -20,6 +20,8 @@ import KituraContracts
 
 /// Class used to construct a Model from a row in the database
 open class DatabaseDecoder {
+    fileprivate static var withFractionalSeconds = ISO8601DateFormatter.Options(rawValue: 1 << 11)
+
     fileprivate let decoder = _DatabaseDecoder()
 
     /// Decode from a dictionary [String: Any] to a Decodable type
@@ -174,7 +176,7 @@ open class DatabaseDecoder {
             // date into an iso8601 string
             if let date = unwrappedValue as? Date {
                 let formatter = ISO8601DateFormatter()
-                formatter.formatOptions = [.withInternetDateTime,.withFractionalSeconds]
+                formatter.formatOptions = [.withInternetDateTime,DatabaseDecoder.withFractionalSeconds]
                 unwrappedValue = formatter.string(from: date)
             }
             return try castedValue(unwrappedValue, type, key)
